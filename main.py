@@ -70,7 +70,9 @@ if __name__ == "__main__":
             )
         
     except Exception as exc:
-        print(exc)
+        # Log
+        print(exc) 
 
     finally: 
+        # Return
         print(json.dumps(api_output, indent=4))
