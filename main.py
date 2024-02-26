@@ -9,7 +9,8 @@ API_INPUT = {
     "peso": 400
 }
 
-ENTREGA_NINJA = {
+DELIVERY_NINJA = {
+    "nome": "Entrega Ninja",
     "dimensao": {
         "altura": range(10, 201),
         "largura": range(6, 141)
@@ -18,7 +19,8 @@ ENTREGA_NINJA = {
     "prazo": 6
 }
 
-ENTREGA_KABUM = {
+DELIVERY_KABUM = {
+    "nome": "Entrega Kabum",
     "dimensao": {
         "altura": range(5, 141),
         "largura": range(13, 126)
@@ -26,6 +28,26 @@ ENTREGA_KABUM = {
     "frete": 0.2,
     "prazo": 4
 }
+
+CARRIERS = [DELIVERY_NINJA, DELIVERY_KABUM]
+
+
+def shipping(weight: int, freight: float) -> None:
+    total = (weight * freight) / 10
+    return total
+
+
+def term(days: int) -> None:
+     return f"{days} dias"
+
+
+def delivery(name: str, weight: int, freight: float, days: str ) -> dict:
+    return {
+                "nome": name,
+                "frete": shipping(weight, freight),
+                "prazo dias": term(days) 
+            }      
+
 
 if __name__ == "__main__":
 
@@ -39,36 +61,24 @@ if __name__ == "__main__":
         if not all(map(lambda key_to_check: key_to_check in API_INPUT["dimensao"], ("altura", "largura"))):
             raise Exception("Não contém altura ou largura")
         
-        dimensao = API_INPUT["dimensao"]
-        peso = API_INPUT["peso"]
+        dimension_input = API_INPUT["dimensao"]
+        weight_input = API_INPUT["peso"]
 
         if (
-            not isinstance(dimensao["altura"], int) 
-            or not isinstance(dimensao["largura"], int)
-            or not (isinstance(peso, int) and (peso > 0))
+            not isinstance(dimension_input["altura"], int) 
+            or not isinstance(dimension_input["largura"], int)
+            or not (isinstance(weight_input, int) and (weight_input > 0))
         ):
             raise Exception("Tipo inválido")
-
-        if (API_INPUT["dimensao"]["altura"] in ENTREGA_NINJA["dimensao"]["altura"] and 
-            API_INPUT["dimensao"]["largura"] in ENTREGA_NINJA["dimensao"]["largura"]):
-            api_output.append(
-                {
-                    "nome": "Entrega Ninja",
-                    "frete": (API_INPUT["peso"] * ENTREGA_NINJA["frete"]) / 10,
-                    "prazo_dias": f"{ENTREGA_NINJA['prazo']} dias"
-                }
-            )
-            
-        if (API_INPUT["dimensao"]["altura"] in ENTREGA_KABUM["dimensao"]["altura"] and 
-            API_INPUT["dimensao"]["largura"] in ENTREGA_KABUM["dimensao"]["largura"]):
-            api_output.append(
-                {
-                    "nome": "Entrega Kabum",
-                    "frete": (API_INPUT["peso"] * ENTREGA_KABUM["frete"]) / 10,
-                    "prazo_dias": f"{ENTREGA_KABUM['prazo']} dias"
-                }
-            )
         
+        for company in CARRIERS:
+
+            if (dimension_input["altura"] in company["dimensao"]["altura"] and
+                dimension_input["largura"] in company["dimensao"]["largura"]):
+                api_output.append( 
+                    delivery(company["nome"], weight_input, company["frete"], company["prazo"])
+                )                      
+                
     except Exception as exc:
         # Log
         print(exc) 
